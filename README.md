@@ -15,3 +15,5 @@ Create and activate a unique Anaconda Environment:
 ### Install requests package
 "pip install requests"
 
+### Install dotenv
+"python-dotenv"

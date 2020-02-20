@@ -6,6 +6,9 @@ import json
 import datetime
 import csv
 import os
+from dotenv import load_dotenv
+
+load_dotenv() # loads contents of .env file into the scripts environment
 
 ## converts a float to a string in USD
 def to_usd(my_price):
@@ -16,7 +19,12 @@ def to_usd(my_price):
 #
 # INFO INPUTS
 #
-request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=demo"
+
+symbol = 'MSFT'
+
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
+
+request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
 response = requests.get(request_url)
 
