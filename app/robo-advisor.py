@@ -3,6 +3,7 @@
 
 import requests
 import json
+import datetime
 
 #
 # INFO INPUTS
@@ -17,18 +18,23 @@ response = requests.get(request_url)
 parsed_response = json.loads(response.text)
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
-breakpoint()
+
 
 # 
 # INFO OUTPUTS
 #
 
 
+#print  time and date
+now = datetime.datetime.now()
+time = now.strftime("%H:%M:%p")
+day = datetime.date.today()
+
 print("-------------------------")
 print("SELECTED SYMBOL: XYZ")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm")
+print(f"REQUEST AT: {day} {time}")
 print("-------------------------")
 print(f"LATEST DAY: {last_refreshed}")
 print("LATEST CLOSE: $100,000.00")
