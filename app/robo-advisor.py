@@ -1,13 +1,14 @@
 # app/robo_advisor.py
 
-
-import requests
 import json
-import datetime
 import csv
 import os
-from dotenv import load_dotenv
 
+import requests
+import datetime
+
+
+from dotenv import load_dotenv
 load_dotenv() # loads contents of .env file into the scripts environment
 
 ## converts a float to a string in USD
@@ -20,15 +21,26 @@ def to_usd(my_price):
 # INFO INPUTS
 #
 
-symbol = 'MSFT'
-
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
-request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
+validation = True
+while validation == True:
+    input0 = input("Please Input a Stock Ticker (e.g. XOM): ")
+    ticker = input0.upper()
+    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
+    response = requests.get(request_url)
+    parsed_response = json.loads(response.text)
+    if "Error Message" in response.text:
+        print("Opps! Could Not Find Data For That Ticker!")
+        validation = True
+    else:
+        print("Getting Stock Data...")
+        validation = False
 
-response = requests.get(request_url)
 
-parsed_response = json.loads(response.text)
+
+
+
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
@@ -90,7 +102,7 @@ time = now.strftime("%H:%M:%p")
 day = datetime.date.today()
 
 print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
+print(f"SELECTED SYMBOL: {ticker}")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
 print(f"REQUEST AT: {day} {time}")
