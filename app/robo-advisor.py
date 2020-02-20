@@ -5,7 +5,7 @@ import requests
 import json
 import datetime
 
-
+## converts a float to a string in USD
 def to_usd(my_price):
     return f"${my_price:,.2f}" 
     ## Taken from shopping-cart project
@@ -18,12 +18,17 @@ request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symb
 
 response = requests.get(request_url)
 
-
 parsed_response = json.loads(response.text)
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
-lastest_close = parsed_response["Time Series (Daily)"]["2020-02-19"]["4. close"]
+tsd = parsed_response["Time Series (Daily)"]
+
+dates = list(tsd.keys()) # sort
+
+latest_day = dates[0] #assuming that the latest day is on top
+
+lastest_close = tsd[latest_day]["4. close"]
 
 
 # 
