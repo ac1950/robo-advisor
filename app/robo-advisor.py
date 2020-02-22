@@ -23,16 +23,28 @@ def to_usd(my_price):
 
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
-validation = True
-while validation == True:
+formating = True
+while formating == True:
     input0 = input("Please Input a Stock Ticker (e.g. XOM): ")
     ticker = input0.upper()
+    if len(ticker) > 5: 
+        print("Oops! Expecting a Properly Formatted Stock Ticker")
+        formating = True
+    elif ticker.isalpha() == False:
+        print("Oops! Expecting a Properly Formatted Stock Ticker")
+        formating = True
+    else:
+        break
+    
+
+validation = True
+while validation == True:
     request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
     response = requests.get(request_url)
     parsed_response = json.loads(response.text)
     if "Error Message" in response.text:
-        print("Opps! Could Not Find Data For That Ticker!")
-        validation = True
+        print("Oops! Could Not Find Data For That Ticker!")
+        quit()
     else:
         print("Getting Stock Data...")
         validation = False
