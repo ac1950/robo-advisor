@@ -23,15 +23,18 @@ def to_usd(my_price):
 
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
+print("Hello Welcome to The Stock Market Robo-Advisor!")
+print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
+
 formating = True
 while formating == True:
     input0 = input("Please Input a Stock Ticker (e.g. XOM): ")
     ticker = input0.upper()
     if len(ticker) > 5: 
-        print("Oops! Expecting a Properly Formatted Stock Ticker")
+        print("Oops! Expecting a Properly Formatted Stock Ticker like 'XOM' ")
         formating = True
     elif ticker.isalpha() == False:
-        print("Oops! Expecting a Properly Formatted Stock Ticker")
+        print("Oops! Expecting a Properly Formatted Stock Ticker Such as 'XOM' ")
         formating = True
     else:
         break
@@ -61,6 +64,7 @@ tsd = parsed_response["Time Series (Daily)"]
 dates = list(tsd.keys()) # sort
 
 latest_day = dates[0] #assuming that the latest day is on top
+yesterday = dates[1]
 
 lastest_close = tsd[latest_day]["4. close"]
 
@@ -113,6 +117,24 @@ now = datetime.datetime.now()
 time = now.strftime("%H:%M:%p")
 day = datetime.date.today()
 
+
+
+
+## Reccomendation
+previous_close = tsd[yesterday]["4. close"]
+print(previous_close)
+
+if float(lastest_close) / float(previous_close) > 1.04:
+    recommendation = "BUY"
+    reason = "Prices Have Increased 4% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
+elif float(lastest_close) / float(previous_close) < .96:
+    recommendation = "SELL"
+    reason = "Prices Have Decreased 4% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
+else: 
+    recommendation = "HOLD"
+    reason = "No Strong Indication of Prices Moving One Way or The Other"
+
+
 print("-------------------------")
 print(f"SELECTED SYMBOL: {ticker}")
 print("-------------------------")
@@ -124,12 +146,13 @@ print(f"LATEST CLOSE: {to_usd(float(lastest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
-print("RECOMMENDATION: BUY!")
-print("RECOMMENDATION REASON: TODO")
+print(f"RECOMMENDATION: {recommendation}!")
+print(f"RECOMMENDATION REASON: {reason}")
 print("-------------------------")
 print(f"WRITING DATA TO CSV: {csv_file_path}")
 print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
+
 
 
