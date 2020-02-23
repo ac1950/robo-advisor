@@ -127,12 +127,12 @@ day = datetime.date.today()
 previous_close = tsd[yesterday]["4. close"]
 print(previous_close)
 
-if float(lastest_close) / float(previous_close) > 1.04:
+if float(lastest_close) / float(previous_close) > 1.03:
     recommendation = "BUY"
-    reason = "Prices Have Increased 4% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
-elif float(lastest_close) / float(previous_close) < .96:
+    reason = "Prices Have Increased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
+elif float(lastest_close) / float(previous_close) < .97:
     recommendation = "SELL"
-    reason = "Prices Have Decreased 4% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
+    reason = "Prices Have Decreased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
 else: 
     recommendation = "HOLD"
     reason = "No Strong Indication of Prices Moving One Way or The Other"
@@ -162,32 +162,20 @@ print("-------------------------")
 #
 # SMS
 #
+if float(lastest_close) / float(previous_close) > 1.04 or float(lastest_close) / float(previous_close) < .96:
+    TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
+    TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
+    SENDER_SMS  = os.environ.get("SENDER_SMS", "OOPS, please specify env var called 'SENDER_SMS'")
+    RECIPIENT_SMS  = os.environ.get("RECIPIENT_SMS", "OOPS, please specify env var called 'RECIPIENT_SMS'")
 
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
-TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
-SENDER_SMS  = os.environ.get("SENDER_SMS", "OOPS, please specify env var called 'SENDER_SMS'")
-RECIPIENT_SMS  = os.environ.get("RECIPIENT_SMS", "OOPS, please specify env var called 'RECIPIENT_SMS'")
+    # AUTHENTICATE
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
-# AUTHENTICATE
+    # COMPILE REQUEST PARAMETERS (PREPARE THE MESSAGE)
+    content = "STOCK ALERT: " + ticker + " has moved 4% since last closing day!"
 
-client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    # ISSUE REQUEST (SEND SMS)
+    message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
 
-# COMPILE REQUEST PARAMETERS (PREPARE THE MESSAGE)
-
-content = "Hello, this is a message from your personal notification service. Hola gorda tu novio es un puto genio. Te amo"
-
-# ISSUE REQUEST (SEND SMS)
-
-message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
-
-# PARSE RESPONSE
-
-print("----------------------")
-print("SMS")
-print("----------------------")
-print("RESPONSE: ", type(message))
-print("FROM:", message.from_)
-print("TO:", message.to)
-print("BODY:", message.body)
-
+    print("ALERT SENT")
 
