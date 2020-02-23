@@ -7,6 +7,7 @@ import os
 import requests
 import datetime
 
+import matplotlib.pyplot as plt
 
 from dotenv import load_dotenv
 
@@ -179,3 +180,35 @@ if float(lastest_close) / float(previous_close) > 1.04 or float(lastest_close) /
 
     print("\nALERT SENT")
 
+## Graph
+
+print("Do You Want a Printed Graph?")
+graph_ask = input("Enter 'yes' or enter 'no': ")
+if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 'Yes':
+    print("PRINT GRAPH")
+    numdays = input("Input the number of days you want analyzed: ")
+
+    x = []
+    y = []
+
+    numdaysint = int(numdays)
+    while numdaysint >= 0:
+        x.append(dates[numdaysint])
+
+
+        yday = dates[numdaysint]
+        y1 = tsd[yday]["4. close"]
+        y.append(y1)
+        y.sort()
+
+        numdaysint = numdaysint - 1
+
+
+    datesgraph = x
+    pricesgraph = y
+
+    plt.plot(datesgraph, pricesgraph, color = 'g')
+    plt.xlabel('Dates')
+    plt.ylabel('Closing Price')
+    plt.title(ticker + " Closing Price Over the Last " + numdays + " days")
+    plt.show()
