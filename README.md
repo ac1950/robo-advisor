@@ -19,6 +19,12 @@
 "To do this create a file called ".env" and place the following inside with your specific API key:"
 ` ALPHAVANTAGE_API_KEY = "abc123" `
 
+"This code should also contain a file called ".gitignore" which will prevent the ".env" file to be read. If this file is not in the repository that you just cloned, create a file called ".gitignore" and place the following contents inside: "
+`# .gitignore`
+`      `
+`# ignore secret environment variable values in the ".env" file:`
+`.env `
+
 
 ### Environment Setup
 Create and activate a unique Anaconda Environment:
