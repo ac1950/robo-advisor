@@ -44,5 +44,11 @@ Create and activate a unique Anaconda Environment:
 ### From wtihin the virtual environment run the code from terminal:
 `python robo-advisor.py`
 
+### For SMS Capabilities 
+"Install" `twilio` 
+
+`pip install twilio`
+
+
 
 

@@ -9,6 +9,9 @@ import datetime
 
 
 from dotenv import load_dotenv
+
+from twilio.rest import Client
+
 load_dotenv() # loads contents of .env file into the scripts environment
 
 ## converts a float to a string in USD
@@ -154,5 +157,37 @@ print("-------------------------")
 print("HAPPY INVESTING!")
 print("-------------------------")
 
+
+
+#
+# SMS
+#
+
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
+TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
+SENDER_SMS  = os.environ.get("SENDER_SMS", "OOPS, please specify env var called 'SENDER_SMS'")
+RECIPIENT_SMS  = os.environ.get("RECIPIENT_SMS", "OOPS, please specify env var called 'RECIPIENT_SMS'")
+
+# AUTHENTICATE
+
+client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+# COMPILE REQUEST PARAMETERS (PREPARE THE MESSAGE)
+
+content = "Hello, this is a message from your personal notification service. Hola gorda tu novio es un puto genio. Te amo"
+
+# ISSUE REQUEST (SEND SMS)
+
+message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
+
+# PARSE RESPONSE
+
+print("----------------------")
+print("SMS")
+print("----------------------")
+print("RESPONSE: ", type(message))
+print("FROM:", message.from_)
+print("TO:", message.to)
+print("BODY:", message.body)
 
 
