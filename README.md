@@ -54,7 +54,8 @@ Create a try Twilio account on https://www.twilio.com/try-twilio and request a f
 Verify the phone number you want messages sent to enable SMS capabilities 
  - note that if you have upgraded your twilio account you do not need to verify every number you send messages to - 
 
- Update the content of the ".env" file to specify the following values
+ Update the content of the ".env" file to specify the following values:
+ 
  `TWILIO_ACCOUNT_SID` 
 
  `TWILIO_AUTH_TOKEN` 
@@ -62,7 +63,7 @@ Verify the phone number you want messages sent to enable SMS capabilities
  `SENDER_SMS`
 
  `RECIPIENT_SMS`
- 
+
 
 
 

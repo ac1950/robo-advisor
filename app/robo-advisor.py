@@ -177,5 +177,5 @@ if float(lastest_close) / float(previous_close) > 1.04 or float(lastest_close) /
     # ISSUE REQUEST (SEND SMS)
     message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
 
-    print("ALERT SENT")
+    print("\nALERT SENT")
 
