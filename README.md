@@ -6,22 +6,22 @@
 `+ Pip`
 
 ### Setup
-"Use GitHub Desktop software or the command-line to download or "clone" this repository onto your computer. Choose a familiar download location like the Desktop" 
+Use GitHub Desktop software or the command-line to download or "clone" this repository onto your computer. Choose a familiar download location like the Desktop
 
 
-"After cloning the repo, navigate there from the command-line:"
+After cloning the repo, navigate there from the command-line:
 
 ` cd ~/Desktop/robo-advisory `
 
 ### Security Requirements
-"This program utlizes the AlphaVantage API (https://www.alphavantage.co/)"
-"This API should not be included within the sourcecode. Instead, you should set an environment variable called ALPHAVANTAGE_API_KEY, and your program should read the API Key from this environment variable at run-time."
-"To do this create a file called ".env" and place the following inside with your specific API key:"
+This program utlizes the AlphaVantage API (https://www.alphavantage.co/)"
+This API should not be included within the sourcecode. Instead, you should set an environment variable called ALPHAVANTAGE_API_KEY, and your program should read the API Key from this environment variable at run-time.
+To do this create a file called ".env" and place the following inside with your specific API key:
 ` ALPHAVANTAGE_API_KEY = "abc123" `
 
-"This code should also contain a file called ".gitignore" which will prevent the ".env" file to be read. If this file is not in the repository that you just cloned, create a file called ".gitignore" and place the following contents inside: "
+This code should also contain a file called ".gitignore" which will prevent the ".env" file to be read. If this file is not in the repository that you just cloned, create a file called ".gitignore" and place the following contents inside: 
 `# .gitignore`
-`      `
+
 `# ignore secret environment variable values in the ".env" file:`
 `.env `
 
@@ -45,9 +45,26 @@ Create and activate a unique Anaconda Environment:
 `python robo-advisor.py`
 
 ### For SMS Capabilities 
-"Install" `twilio` 
+Install `twilio` 
 
 `pip install twilio`
+
+Create a try Twilio account on https://www.twilio.com/try-twilio and request a free phone number
+
+Verify the phone number you want messages sent to enable SMS capabilities 
+ - note that if you have upgraded your twilio account you do not need to verify every number you send messages to - 
+
+ Update the content of the ".env" file to specify the following values
+ `TWILIO_ACCOUNT_SID` 
+
+ `TWILIO_AUTH_TOKEN` 
+
+ `SENDER_SMS`
+
+ `RECIPIENT_SMS`
+ 
+
+
 
 
 
