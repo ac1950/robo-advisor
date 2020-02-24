@@ -198,17 +198,27 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
 
         yday = dates[numdaysint]
         y1 = tsd[yday]["4. close"]
-        y.append(y1)
-        y.sort()
+        y2 = (float(y1))
+        y.append(y2)
+
 
         numdaysint = numdaysint - 1
 
+   
 
     datesgraph = x
     pricesgraph = y
 
+    print(datesgraph)
+    print(pricesgraph)
+    
+  
+
     plt.plot(datesgraph, pricesgraph, color = 'g')
+
     plt.xlabel('Dates')
     plt.ylabel('Closing Price')
     plt.title(ticker + " Closing Price Over the Last " + numdays + " days")
     plt.show()
+
+
