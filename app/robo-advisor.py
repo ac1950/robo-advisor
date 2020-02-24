@@ -186,10 +186,12 @@ print("Do You Want a Printed Graph?")
 graph_ask = input("Enter 'yes' or enter 'no': ")
 if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 'Yes':
     print("PRINT GRAPH")
-    numdays = input("Input the number of days you want analyzed: ")
+    numdays1 = input("Input the number of days you want analyzed: ")
 
     x = []
     y = []
+
+    numdays = int(numdays1) - 1
 
     numdaysint = int(numdays)
     while numdaysint >= 0:
@@ -209,8 +211,13 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
     datesgraph = x
     pricesgraph = y
 
-    print(datesgraph)
-    print(pricesgraph)
+    plt.xticks(fontsize=4)
+
+
+
+
+
+
     
   
 
@@ -218,7 +225,7 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
 
     plt.xlabel('Dates')
     plt.ylabel('Closing Price')
-    plt.title(ticker + " Closing Price Over the Last " + numdays + " days")
+    plt.title(ticker + " Closing Price Over the Last " + str(numdays) + " days")
     plt.show()
 
 
