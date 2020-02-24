@@ -126,7 +126,7 @@ day = datetime.date.today()
 
 ## Reccomendation
 previous_close = tsd[yesterday]["4. close"]
-print(previous_close)
+#print(previous_close)
 
 if float(lastest_close) / float(previous_close) > 1.03:
     recommendation = "BUY"
