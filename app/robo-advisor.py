@@ -72,6 +72,9 @@ def readable_response(parsed_response):
 
     return dates
 
+def get_latest_close(dates):
+    lastest_close = dates[0]["Close"]
+    return lastest_close
 
 
 
@@ -81,7 +84,6 @@ tsd = parsed_response["Time Series (Daily)"]
 
 dates = list(tsd.keys()) # sort
 
-latest_day = dates[0] #assuming that the latest day is on top
 yesterday = dates[1]
 
 lastest_close = tsd[latest_day]["4. close"]
@@ -252,3 +254,6 @@ if __name__ == "__main__":
     ticker = symbol.upper() #Makes sure upper case stock ticker
     parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
     dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
+
+    lastest_close = get_latest_close(dates)
+
