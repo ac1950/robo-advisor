@@ -76,6 +76,9 @@ def get_latest_close(dates):
     lastest_close = dates[0]["Close"]
     return lastest_close
 
+def get_previous_close(dates): 
+    previous_close = dates[1]["Close"]
+    return previous_close
 
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
@@ -256,4 +259,6 @@ if __name__ == "__main__":
     dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
 
     lastest_close = get_latest_close(dates)
+    previous_close = get_previous_close(dates) 
+
 
