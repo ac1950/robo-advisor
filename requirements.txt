@@ -1,3 +1,5 @@
+
+## all of the relevant packages needed 
 requests
 python-dotenv
 twilio 
