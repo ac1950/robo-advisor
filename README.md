@@ -71,5 +71,17 @@ Verify the phone number you want messages sent to enable SMS capabilities
 From within the Virtual Environment do: 
 ` pip install matplotlib` 
 
+### Facilated Installation of the Packages
+From within the Virtual Environment do: 
+` pip install -r requirements.txt` 
+
+### Running the Finished Program
+From within the virtual environment, demonstrate your ability to run the Python script from the command-line:
+` python app/robo-advisor.py` 
 
 
+### Testing 
+Testing with Pytest Package
+
+Use the command below to use "pytest" package to run a test
+` pytest` 
