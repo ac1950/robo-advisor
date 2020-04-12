@@ -73,11 +73,11 @@ def readable_response(parsed_response):
     return dates
 
 def get_latest_close(dates):
-    lastest_close = dates[0]["Close"]
-    return lastest_close
+    latest_close = dates[0]["close"]
+    return latest_close
 
 def get_previous_close(dates): 
-    previous_close = dates[1]["Close"]
+    previous_close = dates[1]["close"]
     return previous_close
 
 def get_last_refreshed(parsed_response): 
@@ -149,135 +149,115 @@ def to_csv(dates, csv_file_path):
         for date_time_series in dates: 
             writer.writerow(date_time_series)
 
+def get_time(): 
+    now = datetime.datetime.now()
+    time = now.strftime("%H:%M:%p")
+    return time
 
-csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
-with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
-    writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
-    writer.writeheader() # uses fieldnames set above
-    for date in dates:
-        daily_prices = tsd[date]
-        writer.writerow({
-            "timestamp": date,
-            "open": daily_prices["1. open"],
-            "high": daily_prices["2. high"],
-            "low": daily_prices["3. low"],
-            "close": daily_prices["4. close"],
-            "volume": daily_prices["5. volume"],
-
-        })
-     
-
-#print  time and date
-now = datetime.datetime.now()
-time = now.strftime("%H:%M:%p")
-day = datetime.date.today()
-
-
+def get_day(): 
+    now = datetime.datetime.now()
+    day = datetime.date.today()
+    return day
 
 def get_recommendation(latest_close, previous_close): 
 
-    if float(lastest_close) / float(previous_close) > 1.03:
+    if float(latest_close) / float(previous_close) > 1.03:
         recommendation = "BUY"
         reason = "Prices Have Increased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
-    elif float(lastest_close) / float(previous_close) < .97:
+    elif float(latest_close) / float(previous_close) < .97:
         recommendation = "SELL"
         reason = "Prices Have Decreased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
     else: 
         recommendation = "HOLD"
         reason = "No Strong Indication of Prices Moving One Way or The Other"
 
-        return recommendation, reason
+        return [recommendation, reason]
+
+def stock_output(ticker, day, time, last_refreshed, latest_close, recent_high, recent_low, recommendation, reason, csv_file_path):
+
+    print("-------------------------")
+    print(f"SELECTED SYMBOL: {ticker}")
+    print("-------------------------")
+    print("REQUESTING STOCK MARKET DATA...")
+    print(f"REQUEST AT: {day} {time}")
+    print("-------------------------")
+    print(f"LATEST DAY: {last_refreshed}")
+    print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
+    print(f"RECENT HIGH: {to_usd(float(recent_high))}")
+    print(f"RECENT LOW: {to_usd(float(recent_low))}")
+    print("-------------------------")
+    print(f"RECOMMENDATION: {recommendation}!")
+    print(f"RECOMMENDATION REASON: {reason}")
+    print("-------------------------")
+    print(f"WRITING DATA TO CSV: {csv_file_path}")
+    print("-------------------------")
+    print("HAPPY INVESTING!")
+    print("-------------------------")
 
 
-print("-------------------------")
-print(f"SELECTED SYMBOL: {ticker}")
-print("-------------------------")
-print("REQUESTING STOCK MARKET DATA...")
-print(f"REQUEST AT: {day} {time}")
-print("-------------------------")
-print(f"LATEST DAY: {last_refreshed}")
-print(f"LATEST CLOSE: {to_usd(float(lastest_close))}")
-print(f"RECENT HIGH: {to_usd(float(recent_high))}")
-print(f"RECENT LOW: {to_usd(float(recent_low))}")
-print("-------------------------")
-print(f"RECOMMENDATION: {recommendation}!")
-print(f"RECOMMENDATION REASON: {reason}")
-print("-------------------------")
-print(f"WRITING DATA TO CSV: {csv_file_path}")
-print("-------------------------")
-print("HAPPY INVESTING!")
-print("-------------------------")
 
-
-
+##
+## SMS
+##
+#if float(latest_close) / float(previous_close) > 1.04 or float(latest_close) / float(previous_close) < .96:
+#    TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
+#    TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
+#    SENDER_SMS  = os.environ.get("SENDER_SMS", "OOPS, please specify env var called 'SENDER_SMS'")
+#    RECIPIENT_SMS  = os.environ.get("RECIPIENT_SMS", "OOPS, please specify env var called 'RECIPIENT_SMS'")
 #
-# SMS
+#    # AUTHENTICATE
+#    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 #
-if float(lastest_close) / float(previous_close) > 1.04 or float(lastest_close) / float(previous_close) < .96:
-    TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
-    TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
-    SENDER_SMS  = os.environ.get("SENDER_SMS", "OOPS, please specify env var called 'SENDER_SMS'")
-    RECIPIENT_SMS  = os.environ.get("RECIPIENT_SMS", "OOPS, please specify env var called 'RECIPIENT_SMS'")
-
-    # AUTHENTICATE
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
-    # COMPILE REQUEST PARAMETERS (PREPARE THE MESSAGE)
-    content = "STOCK ALERT: " + ticker + " has moved 4% since last closing day!"
-
-    # ISSUE REQUEST (SEND SMS)
-    message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
-
-    print("\nALERT SENT")
-
-## Graph
-
-print("Do You Want a Printed Graph?")
-graph_ask = input("Enter 'yes' or enter 'no': ")
-if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 'Yes':
-    print("PRINT GRAPH")
-    numdays1 = input("Input the number of days you want analyzed: ")
-
-    x = []
-    y = []
-
-    numdays = int(numdays1) - 1
-
-    numdaysint = int(numdays)
-    while numdaysint >= 0:
-        x.append(dates[numdaysint])
-
-
-        yday = dates[numdaysint]
-        y1 = tsd[yday]["4. close"]
-        y2 = (float(y1))
-        y.append(y2)
-
-
-        numdaysint = numdaysint - 1
-
-   
-
-    datesgraph = x
-    pricesgraph = y
-
-    plt.xticks(fontsize=4)
-
-
-
-
-
-
-    
-  
-
-    plt.plot(datesgraph, pricesgraph, color = 'g')
-
-    plt.xlabel('Dates')
-    plt.ylabel('Closing Price')
-    plt.title(ticker + " Closing Price Over the Last " + str(numdays + 1) + " days")
-    plt.show()
-
+#    # COMPILE REQUEST PARAMETERS (PREPARE THE MESSAGE)
+#    content = "STOCK ALERT: " + ticker + " has moved 4% since last closing day!"
+#
+#    # ISSUE REQUEST (SEND SMS)
+#    message = client.messages.create(to=RECIPIENT_SMS, from_=SENDER_SMS, body=content)
+#
+#    print("\nALERT SENT")
+#
+### Graph
+#
+#print("Do You Want a Printed Graph?")
+#graph_ask = input("Enter 'yes' or enter 'no': ")
+#if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 'Yes':
+#    print("PRINT GRAPH")
+#    numdays1 = input("Input the number of days you want analyzed: ")
+#
+#    x = []
+#    y = []
+#
+#    numdays = int(numdays1) - 1
+#
+#    numdaysint = int(numdays)
+#    while numdaysint >= 0:
+#        x.append(dates[numdaysint])
+#
+#
+#        yday = dates[numdaysint]
+#        y1 = tsd[yday]["4. close"]
+#        y2 = (float(y1))
+#        y.append(y2)
+#
+#
+#        numdaysint = numdaysint - 1
+#
+#   
+#
+#    datesgraph = x
+#    pricesgraph = y
+#
+#    plt.xticks(fontsize=4)
+#
+#  
+#
+#    plt.plot(datesgraph, pricesgraph, color = 'g')
+#
+#    plt.xlabel('Dates')
+#    plt.ylabel('Closing Price')
+#    plt.title(ticker + " Closing Price Over the Last " + str(numdays + 1) + " days")
+#    plt.show()
+#
 
 
 
@@ -291,7 +271,7 @@ if __name__ == "__main__":
     parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
     dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
 
-    lastest_close = get_latest_close(dates) # gets latest_close price
+    latest_close = get_latest_close(dates) # gets latest_close price
     previous_close = get_previous_close(dates) # gets yesterday's closing price
     last_refreshed = get_last_refreshed(parsed_response) # gets date of last available stock information 
 
@@ -301,10 +281,17 @@ if __name__ == "__main__":
     high_100days = get_high_100(ticker) # returns high over the last 100 days
     low_100days = get_low_100(ticker) # returns low over the last 100 days
 
+    day = get_day()
+    time = get_time()
+
+    recommendation = get_recommendation(latest_close, previous_close)[0]
+    reason = get_recommendation(latest_close, previous_close)[1]
+
     to_csv(dates, csv_file_path) # write the stock data from dates to a nicely formatted .csv
 
     ###outputs
-    stock_output(ticker) # prints the main outputs for the stock
+    get_recommendation(latest_close, previous_close)
+    stock_output(ticker, day, time, last_refreshed, latest_close, recent_high, recent_low, recommendation, reason, csv_file_path) # prints the main outputs for the stock
 
 
 
