@@ -80,12 +80,68 @@ def get_previous_close(dates):
     previous_close = dates[1]["Close"]
     return previous_close
 
+def get_last_refreshed(parsed_response): 
+    last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
+    return last_refreshed    
 
-last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
+def get_recent_high(dates):
+    high_prices = []
+    for date_time_series in dates: 
+        high_price = date_time_series["high"]
+        high_prices.append(float(high_price))
+    
+    recent_high = max(high_prices)
+    return recent_high
 
-tsd = parsed_response["Time Series (Daily)"]
+def get_recent_low(dates):
+    low_prices = []
+    for date_time_series in dates: 
+        low_price = date_time_series["low"]
+        low_prices.append(float(low_price))
 
-dates = list(tsd.keys()) # sort
+    recent_low = min(low_prices)
+    return recent_low
+
+def get_high_52weeks(ticker):
+
+    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
+    response = requests.get(request_url)
+    parsed_response = json.loads(response.text)
+    tsd = parsed_response["Time Series (Daily)"]
+    dates = list(tsd.keys()) # sort
+
+    high_prices = []
+
+    for date in dates:
+        high_price = tsd[date]["2. high"]
+        high_prices.append(float(high_price))
+
+    #max of all the high prices over the last 100 days
+    recent_high = max(high_prices)
+
+    return recent_high
+
+def get_low_52weeks(ticker):
+
+
+    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
+    response = requests.get(request_url)
+    parsed_response = json.loads(response.text)
+    tsd = parsed_response["Time Series (Daily)"]
+    dates = list(tsd.keys()) # sort
+    
+    low_prices = []
+
+    for date in dates:
+        low_price = tsd[date]["3. low"]
+        low_prices.append(float(low_price))
+    
+    #min of all the low prices over the last 100 days
+    recent_low = min(low_prices)
+    
+    return recent_low
+
+
 
 yesterday = dates[1]
 
@@ -258,7 +314,16 @@ if __name__ == "__main__":
     parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
     dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
 
-    lastest_close = get_latest_close(dates)
-    previous_close = get_previous_close(dates) 
+    lastest_close = get_latest_close(dates) # gets latest_close price
+    previous_close = get_previous_close(dates) # gets yesterday's closing price
+    last_refreshed = get_last_refreshed(parsed_response) # gets date of last available stock information 
+
+    recent_high = get_recent_high(dates) # recent high price
+    recent_low = get_recent_low(dates) # get recent low price   
+
+    high_52weeks = get_high_52weeks(ticker) # returns high over the last 52 weeks
+    low_52weeks = get_low_52weeks(ticker) # returns low over the last 52 weeks
+
+
 
 
