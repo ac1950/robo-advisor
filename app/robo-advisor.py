@@ -34,34 +34,33 @@ def intro_message():
     print("Hello Welcome to The Stock Market Robo-Advisor!")
     print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
 
+def get_data(ticker):   
+    formating = True
+    while formating == True:
+        if len(ticker) > 5: 
+            print("Oops! Expecting a Properly Formatted Stock Ticker like 'XOM' ")
+            formating = True
+        elif ticker.isalpha() == False:
+            print("Oops! Expecting a Properly Formatted Stock Ticker Such as 'XOM' ")
+            formating = True
+        else:
+            break
+    validation = True
+    while validation == True:
+        request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
+        response = requests.get(request_url)
+        parsed_response = json.loads(response.text)
+        if "Error Message" in response.text:
+            print("Oops! Could Not Find Data For That Ticker!")
+            quit()
+        else:
+            print("Getting Stock Data...")
+            validation = False
+    return parsed_response
 
-
-
-formating = True
-while formating == True:
-    input0 = input("Please Input a Stock Ticker (e.g. XOM): ")
-    ticker = input0.upper()
-    if len(ticker) > 5: 
-        print("Oops! Expecting a Properly Formatted Stock Ticker like 'XOM' ")
-        formating = True
-    elif ticker.isalpha() == False:
-        print("Oops! Expecting a Properly Formatted Stock Ticker Such as 'XOM' ")
-        formating = True
-    else:
-        break
     
 
-validation = True
-while validation == True:
-    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
-    response = requests.get(request_url)
-    parsed_response = json.loads(response.text)
-    if "Error Message" in response.text:
-        print("Oops! Could Not Find Data For That Ticker!")
-        quit()
-    else:
-        print("Getting Stock Data...")
-        validation = False
+
 
 
 
@@ -102,9 +101,7 @@ recent_low = min(low_prices)
 # INFO OUTPUTS
 #
 
-##WRITING TO CSV
-#csv_file_path = "data/prices.csv" # a relative filepath
-csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+
 
 csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
 with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
@@ -238,3 +235,12 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
 
 
 
+if __name__ == "__main__": 
+    ## writing CSV
+    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+
+    #Order of Functions
+    symbol = input("Please input a stock ticker (e.g. MSFT)") #Input Stock Ticker
+    ticker = symbol.upper() #Makes sure upper case stock ticker
+    parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
+    
