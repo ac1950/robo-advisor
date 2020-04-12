@@ -3,62 +3,82 @@
 import json
 import csv
 import os
-
 import requests
 import datetime
-
 import matplotlib.pyplot as plt
-
 from dotenv import load_dotenv
-
 from twilio.rest import Client
 
+
+
 load_dotenv() # loads contents of .env file into the scripts environment
-
-## converts a float to a string in USD
-def to_usd(my_price):
-    return f"${my_price:,.2f}" 
-    ## Taken from shopping-cart project
-    ##Source: https://github.com/prof-rossetti/intro-to-python/blob/master/notes/python/datatypes/numbers.md#formatting-as-currency
-
-#
-# INFO INPUTS
-#
-
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
-print("Hello Welcome to The Stock Market Robo-Advisor!")
-print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
-
-formating = True
-while formating == True:
-    input0 = input("Please Input a Stock Ticker (e.g. XOM): ")
-    ticker = input0.upper()
-    if len(ticker) > 5: 
-        print("Oops! Expecting a Properly Formatted Stock Ticker like 'XOM' ")
-        formating = True
-    elif ticker.isalpha() == False:
-        print("Oops! Expecting a Properly Formatted Stock Ticker Such as 'XOM' ")
-        formating = True
-    else:
-        break
+def to_usd(my_price):
     
+    """ 
+    Takes a float or int and returns a string formatted in USD  
+    Paramater: the number to be converted 
+    Example:
+    to_usd(5.451) == "$5.45" ## has two decimal places and rounded
 
-validation = True
-while validation == True:
-    request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
-    response = requests.get(request_url)
-    parsed_response = json.loads(response.text)
-    if "Error Message" in response.text:
-        print("Oops! Could Not Find Data For That Ticker!")
-        quit()
-    else:
-        print("Getting Stock Data...")
-        validation = False
+    """ 
 
+    return f"${my_price:,.2f}" 
+    ## Taken from shopping-cart project
 
+def intro_message(): 
+    """ Just a message to welcome """
+    print("Hello Welcome to The Stock Market Robo-Advisor!")
+    print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
 
+def get_data(ticker):   
+    formating = True
+    while formating == True:
+        if len(ticker) > 5: 
+            print("Oops! Expecting a Properly Formatted Stock Ticker like 'XOM' ")
+            formating = True
+        elif ticker.isalpha() == False:
+            print("Oops! Expecting a Properly Formatted Stock Ticker Such as 'XOM' ")
+            formating = True
+        else:
+            break
+    validation = True
+    while validation == True:
+        request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
+        response = requests.get(request_url)
+        parsed_response = json.loads(response.text)
+        if "Error Message" in response.text:
+            print("Oops! Could Not Find Data For That Ticker!")
+            quit()
+        else:
+            print("Getting Stock Data...")
+            validation = False
+    return parsed_response
 
+def readable_response(parsed_response):
+    tsd = parsed_response["Time Series (Daily)"]
+    dates = []
+    for date, daily_prices in tsd.items():# see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
+        date_time_series = {
+            "timestamp": date,
+            "open": float(daily_prices["1. open"]),
+            "high": float(daily_prices["2. high"]),
+            "low": float(daily_prices["3. low"]),
+            "close": float(daily_prices["4. close"]),
+            "volume": int(daily_prices["5. volume"])
+        }
+        dates.append(date_time_series)
+
+    return dates
+
+def get_latest_close(dates):
+    lastest_close = dates[0]["Close"]
+    return lastest_close
+
+def get_previous_close(dates): 
+    previous_close = dates[1]["Close"]
+    return previous_close
 
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
@@ -67,7 +87,6 @@ tsd = parsed_response["Time Series (Daily)"]
 
 dates = list(tsd.keys()) # sort
 
-latest_day = dates[0] #assuming that the latest day is on top
 yesterday = dates[1]
 
 lastest_close = tsd[latest_day]["4. close"]
@@ -95,9 +114,7 @@ recent_low = min(low_prices)
 # INFO OUTPUTS
 #
 
-##WRITING TO CSV
-#csv_file_path = "data/prices.csv" # a relative filepath
-csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+
 
 csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
 with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
@@ -225,7 +242,23 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
 
     plt.xlabel('Dates')
     plt.ylabel('Closing Price')
-    plt.title(ticker + " Closing Price Over the Last " + str(numdays) + " days")
+    plt.title(ticker + " Closing Price Over the Last " + str(numdays + 1) + " days")
     plt.show()
+
+
+
+
+if __name__ == "__main__": 
+    ## writing CSV
+    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+
+    #Order of Functions
+    symbol = input("Please input a stock ticker (e.g. MSFT)") #Input Stock Ticker
+    ticker = symbol.upper() #Makes sure upper case stock ticker
+    parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
+    dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
+
+    lastest_close = get_latest_close(dates)
+    previous_close = get_previous_close(dates) 
 
 
