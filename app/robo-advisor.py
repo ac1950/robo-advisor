@@ -102,7 +102,7 @@ def get_recent_low(dates):
     recent_low = min(low_prices)
     return recent_low
 
-def get_high_52weeks(ticker):
+def get_high_100(ticker):
 
     request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
     response = requests.get(request_url)
@@ -121,7 +121,7 @@ def get_high_52weeks(ticker):
 
     return recent_high
 
-def get_low_52weeks(ticker):
+def get_low_100(ticker):
 
 
     request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
@@ -149,34 +149,6 @@ def to_csv(dates, csv_file_path):
         for date_time_series in dates: 
             writer.writerow(date_time_series)
 
-yesterday = dates[1]
-
-lastest_close = tsd[latest_day]["4. close"]
-
-
-### CHECK DAYS GONE THROUGH THE LOOP IE HOW MANY TIMES
-#get high price and low price from each day
-high_prices = []
-low_prices = []
-
-for date in dates:
-    high_price = tsd[date]["2. high"]
-    high_prices.append(float(high_price))
-    low_price = tsd[date]["3. low"]
-    low_prices.append(float(low_price))
-
-#max of all the high prices over the last 100 days
-recent_high = max(high_prices)
-
-#min of all the low prices over the last 100 days
-recent_low = min(low_prices)
- 
-
-# 
-# INFO OUTPUTS
-#
-
-
 
 csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
 with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
@@ -202,20 +174,19 @@ day = datetime.date.today()
 
 
 
+def get_recommendation(latest_close, previous_close): 
 
-## Reccomendation
-previous_close = tsd[yesterday]["4. close"]
-#print(previous_close)
+    if float(lastest_close) / float(previous_close) > 1.03:
+        recommendation = "BUY"
+        reason = "Prices Have Increased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
+    elif float(lastest_close) / float(previous_close) < .97:
+        recommendation = "SELL"
+        reason = "Prices Have Decreased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
+    else: 
+        recommendation = "HOLD"
+        reason = "No Strong Indication of Prices Moving One Way or The Other"
 
-if float(lastest_close) / float(previous_close) > 1.03:
-    recommendation = "BUY"
-    reason = "Prices Have Increased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bull Market\n"
-elif float(lastest_close) / float(previous_close) < .97:
-    recommendation = "SELL"
-    reason = "Prices Have Decreased 3% Since Previous Trading Day\n                       Could Be An Indication of a Bear Market\n" 
-else: 
-    recommendation = "HOLD"
-    reason = "No Strong Indication of Prices Moving One Way or The Other"
+        return recommendation, reason
 
 
 print("-------------------------")
@@ -327,10 +298,13 @@ if __name__ == "__main__":
     recent_high = get_recent_high(dates) # recent high price
     recent_low = get_recent_low(dates) # get recent low price   
 
-    high_52weeks = get_high_52weeks(ticker) # returns high over the last 52 weeks
-    low_52weeks = get_low_52weeks(ticker) # returns low over the last 52 weeks
+    high_100days = get_high_100(ticker) # returns high over the last 100 days
+    low_100days = get_low_100(ticker) # returns low over the last 100 days
 
     to_csv(dates, csv_file_path) # write the stock data from dates to a nicely formatted .csv
+
+    ###outputs
+    stock_output(ticker) # prints the main outputs for the stock
 
 
 
