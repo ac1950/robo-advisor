@@ -3,32 +3,39 @@
 import json
 import csv
 import os
-
 import requests
 import datetime
-
 import matplotlib.pyplot as plt
-
 from dotenv import load_dotenv
-
 from twilio.rest import Client
 
+
+
 load_dotenv() # loads contents of .env file into the scripts environment
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
+
 
 ## converts a float to a string in USD
 def to_usd(my_price):
+    
+    """ 
+    Takes a float or int and returns a string formatted in USD  
+    Paramater: the number to be converted 
+    Example:
+    to_usd(5.451) == "$5.45" ## has two decimal places and rounded
+
+    """ 
+
     return f"${my_price:,.2f}" 
     ## Taken from shopping-cart project
-    ##Source: https://github.com/prof-rossetti/intro-to-python/blob/master/notes/python/datatypes/numbers.md#formatting-as-currency
 
-#
-# INFO INPUTS
-#
+def intro_message(): 
+    """ Just a message to welcome """
+    print("Hello Welcome to The Stock Market Robo-Advisor!")
+    print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
 
-api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
-print("Hello Welcome to The Stock Market Robo-Advisor!")
-print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
+
 
 formating = True
 while formating == True:
@@ -225,7 +232,9 @@ if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 
 
     plt.xlabel('Dates')
     plt.ylabel('Closing Price')
-    plt.title(ticker + " Closing Price Over the Last " + str(numdays) + " days")
+    plt.title(ticker + " Closing Price Over the Last " + str(numdays + 1) + " days")
     plt.show()
+
+
 
 
