@@ -141,7 +141,13 @@ def get_low_52weeks(ticker):
     
     return recent_low
 
-
+def to_csv(dates, csv_file_path): 
+    csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
+    with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
+        writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+        writer.writeheader() # uses fieldnames set above
+        for date_time_series in dates: 
+            writer.writerow(date_time_series)
 
 yesterday = dates[1]
 
@@ -323,6 +329,8 @@ if __name__ == "__main__":
 
     high_52weeks = get_high_52weeks(ticker) # returns high over the last 52 weeks
     low_52weeks = get_low_52weeks(ticker) # returns low over the last 52 weeks
+
+    to_csv(dates, csv_file_path) # write the stock data from dates to a nicely formatted .csv
 
 
 
