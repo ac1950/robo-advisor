@@ -14,8 +14,6 @@ from twilio.rest import Client
 load_dotenv() # loads contents of .env file into the scripts environment
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
-
-## converts a float to a string in USD
 def to_usd(my_price):
     
     """ 
@@ -58,11 +56,21 @@ def get_data(ticker):
             validation = False
     return parsed_response
 
-    
+def readable_response(parsed_response):
+    tsd = parsed_response["Time Series (Daily)"]
+    dates = []
+    for date, daily_prices in tsd.items():# see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
+        date_time_series = {
+            "timestamp": date,
+            "open": float(daily_prices["1. open"]),
+            "high": float(daily_prices["2. high"]),
+            "low": float(daily_prices["3. low"]),
+            "close": float(daily_prices["4. close"]),
+            "volume": int(daily_prices["5. volume"])
+        }
+        dates.append(date_time_series)
 
-
-
-
+    return dates
 
 
 
@@ -243,4 +251,4 @@ if __name__ == "__main__":
     symbol = input("Please input a stock ticker (e.g. MSFT)") #Input Stock Ticker
     ticker = symbol.upper() #Makes sure upper case stock ticker
     parsed_response = get_data(ticker) #Returns data for stock ticker after being capitalized 
-    
+    dates = readable_response(parsed_response) # takes data from stock ticker and makes it readable
