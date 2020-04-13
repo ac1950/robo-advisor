@@ -33,6 +33,13 @@ def intro_message():
     print("Remember: Bulls Make Money, Bears Make Money, Pigs Get Slaughtered")
 
 def get_data(ticker):   
+    """
+    takes the ticker as a param 
+    returns data from tha alphaadvantage api
+
+    """
+
+
     formating = True
     while formating == True:
         if len(ticker) > 5: 
@@ -57,6 +64,12 @@ def get_data(ticker):
     return parsed_response
 
 def readable_response(parsed_response):
+
+    """ 
+    takes parsed_response and transforms the information into a list that will be used later
+    Returns dates and will be used for many other functions 
+    """ 
+
     tsd = parsed_response["Time Series (Daily)"]
     dates = []
     for date, daily_prices in tsd.items():# see: https://github.com/prof-rossetti/georgetown-opim-243-201901/blob/master/notes/python/datatypes/dictionaries.md
@@ -73,18 +86,37 @@ def readable_response(parsed_response):
     return dates
 
 def get_latest_close(dates):
+
+    """ 
+    takes dates as a param and returns the latest closing price
+    """ 
     latest_close = dates[0]["close"]
     return latest_close
 
 def get_previous_close(dates): 
+    """ 
+    takes dates as a param and returns the last day closing price
+    """ 
     previous_close = dates[1]["close"]
     return previous_close
 
 def get_last_refreshed(parsed_response): 
+
+    """
+    returns the date from when last stock market information is available 
+    takes the parsed_response as a param
+    """ 
+
     last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
     return last_refreshed    
 
 def get_recent_high(dates):
+    """ returns recent high 
+    takes the dates as a param 
+    100 days 
+    """ 
+
+    
     high_prices = []
     for date_time_series in dates: 
         high_price = date_time_series["high"]
@@ -94,6 +126,10 @@ def get_recent_high(dates):
     return recent_high
 
 def get_recent_low(dates):
+    """ returns recent low 
+    takes the dates as a param 
+    100 days 
+    """ 
     low_prices = []
     for date_time_series in dates: 
         low_price = date_time_series["low"]
@@ -104,6 +140,8 @@ def get_recent_low(dates):
 
 def get_high_100(ticker, parsed_response):
 
+    """ returns the highest price over the last 100 days 
+    """ 
     #request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&apikey={api_key}"
     #response = requests.get(request_url)
     #parsed_response = json.loads(response.text)
@@ -123,6 +161,9 @@ def get_high_100(ticker, parsed_response):
 
 def get_low_100(ticker, parsed_response):
 
+    """ 
+    returns the lowest price over the last 100 days
+    """ 
     tsd = parsed_response["Time Series (Daily)"]
     dates = list(tsd.keys()) # sort
     
@@ -138,6 +179,10 @@ def get_low_100(ticker, parsed_response):
     return recent_low
 
 def to_csv(dates, csv_file_path): 
+
+    """ takes the outputs from the dates and writes it onto a .csv file
+    """
+
     csv_headers = ["timestamp", "open","high", "low", "close", "volume"]
     with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
         writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
@@ -146,16 +191,22 @@ def to_csv(dates, csv_file_path):
             writer.writerow(date_time_series)
 
 def get_time(): 
+
+    """ basic funciton to get time""" 
     now = datetime.datetime.now()
     time = now.strftime("%H:%M:%p")
     return time
 
 def get_day(): 
+
+    """ basic funciton to get day """ 
     now = datetime.datetime.now()
     day = datetime.date.today()
     return day
 
 def get_recommendation(latest_close, previous_close): 
+
+    """ takes latest_close and previous_close as a param to calculate what the recoomendation and reason are for buy sell or hold""" 
 
     if float(latest_close) / float(previous_close) > 1.03:
         recommendation = "BUY"
@@ -170,6 +221,10 @@ def get_recommendation(latest_close, previous_close):
         return [recommendation, reason]
 
 def stock_output(ticker, day, time, last_refreshed, latest_close, recent_high, recent_low, recommendation, reason, csv_file_path):
+
+    """ 
+    funciton that nicely formats the receipt
+    """ 
 
     print("-------------------------")
     print(f"SELECTED SYMBOL: {ticker}")
@@ -191,6 +246,11 @@ def stock_output(ticker, day, time, last_refreshed, latest_close, recent_high, r
     print("-------------------------")
 
 def send_text(latest_close, previous_close, ticker):
+
+    """ 
+    funciton that takes in paramaters to determine whether or not to send text suing TWILIO API
+
+    """ 
     if float(latest_close) / float(previous_close) > 1.04 or float(latest_close) / float(previous_close) < .96:
         TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "OOPS, please specify env var called 'TWILIO_AUTH_TOKEN'")
         TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "OOPS, please specify env var called 'TWILIO_ACCOUNT_SID'")
@@ -209,6 +269,8 @@ def send_text(latest_close, previous_close, ticker):
         print("\nALERT SENT")
 
 def get_graph(ticker, parsed_response): 
+
+    """ prompts whether or not to print a graph """ 
     tsd = parsed_response["Time Series (Daily)"]
     dates = list(tsd.keys()) # sort
 
@@ -254,8 +316,14 @@ def get_graph(ticker, parsed_response):
         plt.show()
 
 
-
 if __name__ == "__main__": 
+
+    """ 
+    the main funciton 
+    Controls when and what functions are called 
+    """ 
+
+    intro_message()
     # writing CSV
     csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
