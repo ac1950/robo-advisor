@@ -268,52 +268,7 @@ def send_text(latest_close, previous_close, ticker):
 
         print("\nALERT SENT")
 
-def get_graph(ticker, parsed_response): 
 
-    """ prompts whether or not to print a graph """ 
-    tsd = parsed_response["Time Series (Daily)"]
-    dates = list(tsd.keys()) # sort
-
-
-    print("Do You Want a Printed Graph?")
-    graph_ask = input("Enter 'yes' or enter 'no': ")
-    if graph_ask == 'yes' or graph_ask == 'y' or graph_ask == 'YES' or graph_ask == 'Yes':
-        print("PRINT GRAPH")
-        numdays1 = input("Input the number of days you want analyzed: ")
-
-        x = []
-        y = []
-
-        numdays = int(numdays1) - 1
-
-        numdaysint = int(numdays)
-        while numdaysint >= 0:
-            x.append(dates[numdaysint])
-
-
-            yday = dates[numdaysint]
-            y1 = tsd[yday]["4. close"]
-            y2 = (float(y1))
-            y.append(y2)
-
-
-            numdaysint = numdaysint - 1
-
-    
-
-        datesgraph = x
-        pricesgraph = y
-
-        plt.xticks(fontsize=4)
-
-    
-
-        plt.plot(datesgraph, pricesgraph, color = 'g')
-
-        plt.xlabel('Dates')
-        plt.ylabel('Closing Price')
-        plt.title(ticker + " Closing Price Over the Last " + str(numdays + 1) + " days")
-        plt.show()
 
 
 if __name__ == "__main__": 
