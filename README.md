@@ -90,4 +90,4 @@ Use the command below to use "pytest" package to run a test
 ### CI with Code Climate and Travis Working
 Travis will check before any merge on github
 Codeclimate detects and reviews any commits on the dashboard 
-`https://codeclimate.com/oss/dashboard`
+`https://codeclimate.com`
