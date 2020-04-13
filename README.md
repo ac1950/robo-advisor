@@ -85,3 +85,9 @@ Testing with Pytest Package
 
 Use the command below to use "pytest" package to run a test
 ` pytest` 
+
+
+### CI with Code Climate and Travis Working
+Travis will check before any merge on github
+Codeclimate detects and reviews any commits on the dashboard 
+`https://codeclimate.com`
